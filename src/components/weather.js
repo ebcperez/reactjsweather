@@ -28,7 +28,7 @@ class Weather extends React.Component {
         }
         var str_id = ids.join(',');
         $.ajax({
-            url: `http://api.openweathermap.org/data/2.5/group?id=${str_id}&appid=8d6e97ea247506b13321897753fe5b3f`,
+            url: `https://api.openweathermap.org/data/2.5/group?id=${str_id}&appid=8d6e97ea247506b13321897753fe5b3f`,
             dataType: 'json',
             cache: false,
             success: function(data) {
