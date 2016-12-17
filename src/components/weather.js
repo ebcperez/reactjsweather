@@ -27,7 +27,7 @@ class Weather extends React.Component {
             ids.push(id);
         }
         var str_id = ids.join(',');
-        axios.get(`http://api.openweathermap.org/data/2.5/group?id=${str_id}&appid=8d6e97ea247506b13321897753fe5b3f`).then(response => {
+        axios.get(`https://api.openweathermap.org/data/2.5/group?id=${str_id}&appid=8d6e97ea247506b13321897753fe5b3f`).then(response => {
             console.log(response.data.list);
             this.setState({
                 city_weather: response.data.list //add list of cities to city_weather state
