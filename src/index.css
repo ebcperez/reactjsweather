@@ -10,10 +10,11 @@ body {
 .main-image {
     position: relative;
     display: block;
+    max-width: none;
 }
 .main-text {
 	text-transform: uppercase;
-    color: #DDD;
+    color: #EEE;
     position: absolute;
     top: 50%;
   	left: 50%;
@@ -35,10 +36,6 @@ body {
 	padding: 0;
 	margin: 0;
 	text-align: center;
-}
-.nav {
-    padding: 0;
-    margin: 0;
 }
 .nav-tabs li > a {
     color: white;
@@ -84,7 +81,7 @@ body {
     padding: 50px 20px;
 }
 .overlay h1 {
-    color: #DDD ;
+    color: #3b3a36 ;
 }
 .hovereffect img {
     display: block;
@@ -106,7 +103,7 @@ body {
 }
 .hovereffect h2 {
     text-transform: uppercase;
-    color: #CCC;
+    color: #3b3a36;
     text-align: center;
     position: relative;
     font-size: 17px;

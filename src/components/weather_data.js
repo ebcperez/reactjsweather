@@ -97,14 +97,16 @@ class WeatherData extends React.Component {
         var desc_arr = descriptions.join(', ');
         return (
             <div id={this.props.tabID} className={this.props.tabClass} >
-                <div className="main">
-                    <div className="main-image">
-                        <img className="img-responsive" src={this.cityImg(this.props.city)} alt='city'/>
-                        <div className="main-text">
-                            <h1>{this.props.city}</h1>
-                            <h2>{this.kToF(this.props.temp)} &deg; F</h2>
-                        </div>   
-                    </div>  
+                <div className='row'>
+                    <div className="main col-sm-12 col-md-12 col-lg-12">
+                        <div className="main-image">
+                            <img className="img-responsive" src={this.cityImg(this.props.city)} alt='city'/>
+                            <div className="main-text">
+                                <h1>{this.props.city}</h1>
+                                <h2>{this.kToF(this.props.temp)} &deg; F</h2>
+                            </div>   
+                        </div>  
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='weather-info col-sm-4 col-md-4 col-lg-4'>
