@@ -26,7 +26,7 @@ class WeatherData extends React.Component {
     }
     //sets weather image based on current weather
     weatherImgCur (weather) {
-        var weather_img = '/images/weather/'
+        var weather_img = 'images/weather/'
         switch(weather) {
             case 'rain':
                 return weather_img.concat('rain.jpg');
@@ -58,7 +58,7 @@ class WeatherData extends React.Component {
     }
     //sets weather image based on weather of the week
     weatherImgWkly (weather) {
-        var weather_img = '/images/weather/main/'
+        var weather_img = 'images/weather/main/'
         switch(weather) {
             case 'rain':
                 return weather_img.concat('rainy.jpg');
@@ -76,7 +76,7 @@ class WeatherData extends React.Component {
                 return weather_img.concat('lightning.jpg');
                 break;
             default:
-                return '/images/weather/mist.jpg';
+                return 'images/weather/mist.jpg';
         }
     }
     //sets weather icon based on current weather
@@ -129,7 +129,7 @@ class WeatherData extends React.Component {
                 <div className='row'>
                     <div className='weather-info col-sm-6 col-md-6 col-lg-6'>
                         <div className='hovereffect hovereffect-weather'>
-                            <img className='img-responsive' src={this.weatherImgCur(this.props.currently.icon)} alt="weather-icon"/>
+                            <img className='img-responsive' src={this.weatherImgCur(this.props.currently.icon)} alt="weather"/>
                             <div className='overlay'>
                                 <h1>Weather</h1>
                                 <h2><i className={this.weatherIcnCur(this.props.currently.icon)}></i> {this.props.currently.summary}</h2>
@@ -139,7 +139,7 @@ class WeatherData extends React.Component {
                     </div>
                     <div className='weather-info col-sm-6 col-md-6 col-lg-6'>
                         <div className='wind hovereffect'>
-                            <img className='img-responsive' src="/images/wind.jpg" alt="compass"/>
+                            <img className='img-responsive' src="images/wind.jpg" alt="wind"/>
                             <div className='overlay'>
                                 <h1>Wind</h1>
                                 <h2> <i className='wi wi-windy'></i>{this.props.currently.windSpeed} meters/sec</h2>
