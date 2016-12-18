@@ -2,72 +2,99 @@ import React from 'react';
 import WeatherData from './weather_data';
 import axios from 'axios';
 
-//list of city ids to be used for api call
-var cityIds = {
-    sacramento: 5389519,
-    fairfield: 4834162,
-    pittsburg: 5383465,
-    san_francisco: 5391959,
-    new_york: 5128638,
-}
-
+var googlekey = 'AIzaSyBQcdM4PQWH6-14r1Ldg4LjkZyfswyNZvk';
 class Weather extends React.Component {
     constructor (props) {
         super(props);
 
         this.state = {
-            city_weather: [], //weather data by city from json
+            value: '', //user input
+            lat: 0, //latitude
+            lon: 0, //longitude
+            timezone: '', //timezone of local area
+            currently: {}, //current weather data
+            hourly: {}, //hourly forecast
+            daily: {}, //daily forecast for the next week
+            time: 0, //timestamp of data -> to be used for unique id
         }
+        this.getLocation = this.getLocation.bind(this);
     }
-    //get json from openweather api and set it to the city_weather state
-    getApiData () { 
-        //join all city ids by comma so url can use them
-        var ids = [];
-        for (let id of Object.values(cityIds)) {
-            ids.push(id);
-        }
-        var str_id = ids.join(',');
-        axios.get(`https://api.openweathermap.org/data/2.5/group?id=${str_id}&appid=8d6e97ea247506b13321897753fe5b3f`).then(response => {
-            console.log(response.data.list);
+    //get json from darksky api and set it to the city_weather state
+    getWeatherApi(lat,lon) {
+        var url = `https://api.darksky.net/forecast/febb2871126cd24613f32a79c32d4158/${lat},${lon}`;
+        console.log(url)
+        axios.get(url).then(response => {
+            console.log(response)
             this.setState({
-                city_weather: response.data.list //add list of cities to city_weather state
+                timezone: response.data.timezone,
+                currently: response.data.currently,
+                hourly: response.data.hourly,
+                daily: response.data.daily,
+                time: response.data.currently.time,
             });
         }).catch(function (error) {
             console.log(error);
         });
     }
+    //gets user input then gets data from api based on location input
+    getLocationApi(location) {
+        var url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googlekey}`;
+        console.log(url)
+        axios.get(url).then(response => {
+            this.setState({
+                lat: response.data.results[0].geometry.location.lat,
+                lon: response.data.results[0].geometry.location.lng,
+            })
+            console.log(this.state.lat)
+            console.log(this.state.lon)
+            this.getWeatherApi(this.state.lat,this.state.lon);
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+    //gets user input 
+    getLocation (event) {
+        this.setState({value: this.refs.location.value});
+        this.getLocationApi(this.refs.location.value);
+        event.preventDefault();
+    }
 
-    componentWillMount () {
-        this.getApiData();
-        console.log('success')
+    componentDidMount () {
+        this.getLocationApi(this.state.value);
     }
 
     render () {
-        //iterate over list of cities from json and pass data as props to weather_data.js
-        var weatherInfo = this.state.city_weather.map(data => {
-            //make sacramento default active tab
-            var tabClass = (data.id == 5389519 ? 'tab-pane fade in active':'tab-pane fade');
-            return <WeatherData key={data.id} tabClass={tabClass} tabID={data.id} sun={data.sys} city={data.name} weatherList={data.weather} temp={data.main.temp} wind={data.wind} />
-        })
-        //create navbar tabs with city id as href links
-        var nav = this.state.city_weather.map(data => {
-            var liActive = (data.id == 5389519 ? 'active':''); //make sacramento tab option active
-            var link = `#${data.id}`;
-            return <li className={liActive} key={data.id} ><a data-toggle="tab" href={link}>{data.name}</a></li>
-        })
         return (
             <div className='text-center'>
-                <ul className='nav nav-tabs'>
-                    {nav}
-                </ul>
-                <div className='tab-content' >
-                    {weatherInfo}
-                </div>
+                <nav className="navbar navbar-fixed-top">
+                    <div className="container-fluid">
+                        <div className="navbar-header">
+                            <button type="button" className="navbar-toggle btn-default" data-toggle="collapse" data-target="#myNavbar">
+                                <span className="glyphicon glyphicon-search"/>
+                            </button>
+                        </div>
+                        <div className="collapse navbar-collapse" id="myNavbar">
+                            <a className="navbar-brand" href="#">ReactWeather</a>
+                            <form onSubmit={this.getLocation} className="navbar-form navbar-right">
+                                <div className="form-group">
+                                    <input type="text" 
+                                    ref='location'
+                                    className='form-control' 
+                                    placeholder="Search location"/>&nbsp;
+                                </div>
+                                <button type="submit" className="btn btn-default">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>          
+                <WeatherData key={this.state.time} 
+                city={this.state.value} 
+                currently={this.state.currently} 
+                hourly={this.state.hourly} 
+                daily={this.state.daily}
+                week={this.state.daily.data} />
             </div>
         );
     }
-}
-Weather.propTypes = {
-    weatherList: React.PropTypes.array,
 }
 export default Weather;
