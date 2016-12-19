@@ -1,6 +1,8 @@
+/*eslint-disable no-unused-vars*/
 import React from 'react';
-import WeatherData from './weather_data';
+import $ from 'jquery';
 import axios from 'axios';
+import WeatherData from './weather_data';
 
 var googlekey = 'AIzaSyBQcdM4PQWH6-14r1Ldg4LjkZyfswyNZvk';
 class Weather extends React.Component {
@@ -11,42 +13,49 @@ class Weather extends React.Component {
             value: '', //user input
             lat: 0, //latitude
             lon: 0, //longitude
-            timezone: '', //timezone of local area
             currently: {}, //current weather data
             hourly: {}, //hourly forecast
             daily: {}, //daily forecast for the next week
             time: 0, //timestamp of data -> to be used for unique id
         }
         this.getLocation = this.getLocation.bind(this);
+        this.getWeatherApi = this.getWeatherApi.bind(this);
     }
-    //get json from darksky api and set it to the city_weather state
+    //get json from darksky api
     getWeatherApi(lat,lon) {
+        var self = this;
         var url = `https://api.darksky.net/forecast/febb2871126cd24613f32a79c32d4158/${lat},${lon}`;
-        console.log(url)
-        axios.get(url).then(response => {
+        //callback function for ajax call that sets state values to data from response
+        function setData(response) {
             console.log(response)
-            this.setState({
-                timezone: response.data.timezone,
-                currently: response.data.currently,
-                hourly: response.data.hourly,
-                daily: response.data.daily,
-                time: response.data.currently.time,
-            });
-        }).catch(function (error) {
-            console.log(error);
+            self.setState({
+                currently: response.currently,
+                hourly: response.hourly,
+                daily: response.daily,
+                time: response.currently.time,
+            })
+        }
+        //jsonp ajax call to weather api
+        //used jquery instead because axios doesnt support jsonp
+        $.ajax({
+            url: url,
+            dataType: 'jsonp',
+            jsonpCallback: 'setData',
+            success: function(response) {
+                setData(response)
+            }
         });
     }
     //gets user input then gets data from api based on location input
     getLocationApi(location) {
-        var url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googlekey}`;
-        console.log(url)
-        axios.get(url).then(response => {
+        var mapurl = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${googlekey}`;
+        console.log(mapurl)
+        axios.get(mapurl).then(response => {
             this.setState({
                 lat: response.data.results[0].geometry.location.lat,
                 lon: response.data.results[0].geometry.location.lng,
             })
-            console.log(this.state.lat)
-            console.log(this.state.lon)
+            console.log(response.data.results[0].formatted_address)
             this.getWeatherApi(this.state.lat,this.state.lon);
         }).catch(function (error) {
             console.log(error);
@@ -54,15 +63,10 @@ class Weather extends React.Component {
     }
     //gets user input 
     getLocation (event) {
-        this.setState({value: this.refs.location.value});
+        this.setState({value: this.refs.location.value}); //user input
         this.getLocationApi(this.refs.location.value);
         event.preventDefault();
     }
-
-    componentDidMount () {
-        this.getLocationApi(this.state.value);
-    }
-
     render () {
         return (
             <div className='text-center'>
